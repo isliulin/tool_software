@@ -1,0 +1,27 @@
+[_setup_]
+port=COM9
+baudrate=115200
+width=20000
+height=400
+background_color = white
+ 
+grid_h_origin = 200
+grid_h_step = 10
+grid_h_color = gray
+grid_h_origin_color = black
+ 
+grid_v_origin = 10
+grid_v_step = 10
+grid_v_color = gray
+grid_v_origin_color = red
+ 
+[_default_]
+min=-10
+max=1100
+ 
+[Field1]
+color=blue
+ 
+[Field2]
+color=red
+ 

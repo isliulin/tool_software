@@ -1,0 +1,54 @@
+/*--------------------------------------------------------------------------------
+调用方式：void extbmp(Byte x0,Byte y0,Byte *bmp) 
+
+函数版本：V1.0 2003.9.2 加注释
+
+函数说明：extbmp()在左上角坐标(x,y)解压显示bmp所指向的图形,图形压缩工具采用“字模3.3”
+          
+          x0必须为8的整数倍。该解压算法适合显存横向排列的液晶。纵向解压算法可参照编写。
+          
+          该算法的疑问或修改建议，请E-mail:c51bbs@vip.163.com
+---------------------------------------------------------------------------------*/
+#define H_BYTE 16 //横向一行的字节数，如128×128的液晶，横向字节数为16
+void extbmp(Byte x0,Byte y0,Byte *bmp)
+{
+	Word n=2,num;
+	Word begin,add1,end;
+	Byte tmp;
+	Word bmp_h,bmp_v;//BMP的宽和高
+	
+	bmp_h=bmp[0];bmp_v=bmp[1];
+	x0/=8;
+	begin=x0+y0*H_BYTE;
+	end=begin+(bmp_v-1)*H_BYTE+bmp_h-1;
+    add1=begin;
+	
+	while (add1<=end)
+	{
+	if (bmp[n]==0x00||bmp[n]==0xFF) //解压缩画黑白点
+		{
+		tmp=bmp[n++];
+		if (bmp[n]!=0x00) num=bmp[n++];
+			else {n++;num=bmp[n++];num|=(bmp[n++]<<8);} //算出了0x00重复的次数
+		
+		while(num--) //把0x00都画出来
+			{
+			display_buff[add1]|=tmp; //display_buff是显存映射在XRAM上的镜象
+			
+			if (add1==end) {UpdataAll();return;}//UpdataAll();完成显存镜象到显存的刷新过程
+			if (add1==begin+bmp_h-1) {begin+=H_BYTE;add1=begin;}
+				else add1++;
+			}
+		}
+	
+	else //直接画,不解压缩
+		{
+			display_buff[add1]|=bmp[n++];
+			
+			if (add1==end) {UpdataAll();return;}
+			if (add1==begin+bmp_h-1) {begin+=H_BYTE;add1=begin;}
+				else add1++;
+		}
+	}
+UpdataAll();
+}
